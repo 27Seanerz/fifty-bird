@@ -3,7 +3,6 @@ Main file for flappy bird project
 April 18th
 ]]
 
-
 -- _______________________________________________________________________ INITIALIZE __________________________________________________________________________
 
 -- virtual resolution handling library
@@ -24,7 +23,6 @@ local ground = love.graphics.newImage('ground.png')
 
 
 -- _______________________________________________________________________ LOAD __________________________________________________________________________
-
 
 function love.load()
     -- initialize our nearest-neighbor filter (doens't anti analyze, doesn't make blurry, good for retro)
