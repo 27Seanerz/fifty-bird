@@ -14,6 +14,8 @@
     as an infinitely generated obstacle course for the player.
 ]]
 
+-- Sean's Edit
+
 -- virtual resolution handling library
 push = require 'push'
 
