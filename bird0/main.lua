@@ -20,6 +20,13 @@ VIRTUAL_HEIGHT = 288
 local background = love.graphics.newImage('background.png')
 local ground = love.graphics.newImage('ground.png')
 
+-- counters for image scrolling
+local groundScroll = 0
+local backgroundScroll = 0
+local BACKGROUND_SPEED = 30
+local GROUND_SPEED = 60
+local BACKGROUND_LOOP = 413
+local GROUND_LOOP = 413
 
 
 -- _______________________________________________________________________ LOAD __________________________________________________________________________
@@ -40,9 +47,6 @@ function love.load()
 end
 
 
-
-
-
 -- _______________________________________________________________________ MISC FUNCTIONS __________________________________________________________________________
 
 --allows for resizing using push lib
@@ -58,16 +62,29 @@ function love.keypressed(key)
 end
 
 
+-- _______________________________________________________________________ UPDATE __________________________________________________________________________
+
+function love.update(dt)
+    -- scrolls ground and background
+    backgroundScroll = (backgroundScroll + BACKGROUND_SPEED*dt) % BACKGROUND_LOOP
+    groundScroll = (groundScroll + GROUND_SPEED*dt) % VIRTUAL_WIDTH
+
+end
+
+
 
 -- _______________________________________________________________________ RENDER __________________________________________________________________________
 function love.draw()
     push:start() -- required in order to render using push lib
     
-    -- draw the background starting at top left (0, 0)
-    love.graphics.draw(background, 0, 0)
 
-    -- draw the ground on top of the background, toward the bottom of the screen
-    love.graphics.draw(ground, 0, VIRTUAL_HEIGHT - 16)
+    -- draw ground and background 
+    love.graphics.draw(background, -backgroundScroll, 0)
+    love.graphics.draw(ground, -groundScroll, VIRTUAL_HEIGHT - 16)
+
+
+    -- DEBUG
+    -- love.graphics.printf(tostring(backgroundScroll), VIRTUAL_WIDTH-30, 10, 100, "center") --check scroll
     
     push:finish() -- required in order to render using push lib
     
