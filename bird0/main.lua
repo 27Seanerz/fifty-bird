@@ -34,10 +34,15 @@ local BACKGROUND_LOOP = 413
 local GROUND_LOOP = 413
 
 --init objects
-local bird = Bird()
-
-local pipes = {}
+local prevPipeY = VIRTUAL_HEIGHT/2
 local pipesAlarm = 0
+
+local bird = Bird(prevPipeY)
+
+local first_pipe = Pipe()
+local top_pipes = {}
+local bottom_pipes = {}
+
 
 
 -- _______________________________________________________________________ LOAD __________________________________________________________________________
@@ -48,6 +53,9 @@ function love.load()
 
     -- initialize random 
     math.randomseed(os.time())
+
+    -- initialize pipe variable
+    first_pipe.y = VIRTUAL_HEIGHT/2
 
     -- app window title
     love.window.setTitle('Sean\'s Flappy Bird')
@@ -99,7 +107,8 @@ function love.update(dt)
 
     pipesAlarm = pipesAlarm + dt
     if pipesAlarm > 2 then 
-        table.insert(pipes, Pipe())
+        table.insert(top_pipes, Pipe())
+        table.insert(bottom_pipes, Pipe())
         pipesAlarm = 0
     end 
 
@@ -107,23 +116,30 @@ function love.update(dt)
     bird:update(dt)
 
     --pipe:update for all pipe objects
-    for k, pipe in pairs(pipes) do
+
+    --[[ my take on top pipes
+    for k, pipe in pairs(top_pipes) do
         pipe:update(dt)
 
         if pipe.x + pipe.width < 0 then 
-            table.remove(pipes, k)
+            table.remove(top_pipes, k)
+        end 
+
+    end ]]
+
+    for k, pipe in pairs(bottom_pipes) do
+        pipe:update(dt)
+
+        if pipe.x + pipe.width < 0 then 
+            table.remove(bottom_pipes, k)
         end 
 
     end 
 
-  
-
+    -- first_pipe:update(dt)
 
     --clears the keys stored/checked last frame
     love.keyboard.keysPressed = {}
-
-  
-
 end
 
 
@@ -137,9 +153,18 @@ function love.draw()
     love.graphics.draw(background, -backgroundScroll, 0)
 
     -- draw pipes 
-    for k, pipe in pairs(pipes) do
-        pipe:render()
+    -- my take on setting first height
+    -- first_pipe:render(math.floor(first_pipe.y), 1)
+
+    for k, pipe in pairs(bottom_pipes) do
+        pipe:render(math.floor(pipe.y), 1)
     end 
+
+    -- my take on top pipes
+    --[[  for k, pipe in pairs(top_pipes) do
+        pipe:render(bottom_pipes[k].y - 150, -1)
+    end ]]
+
 
 
     love.graphics.draw(ground, -groundScroll, VIRTUAL_HEIGHT - 16)

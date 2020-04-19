@@ -15,19 +15,28 @@ Pipe = Class{}
 local PIPE_IMAGE = love.graphics.newImage('pipe.png')
 local PIPE_SCROLL = -60
 
-function Pipe:init(position)
+function Pipe:init()
     self.x = VIRTUAL_WIDTH
 
     -- set the Y to a random value halfway below the screen
-    self.y = math.random(VIRTUAL_HEIGHT / 4, VIRTUAL_HEIGHT - 10)
+    self.y = math.random(100, VIRTUAL_HEIGHT - 30)
 
     self.width = PIPE_IMAGE:getWidth()
 end
+
+--[[function Pipe:first_init(prev_y)
+    self.x = VIRTUAL_WIDTH
+
+    -- set the Y to a random value halfway below the screen
+    self.y = prev_y
+
+    self.width = PIPE_IMAGE:getWidth()
+end]]
 
 function Pipe:update(dt)
     self.x = self.x + PIPE_SCROLL * dt
 end
 
-function Pipe:render()
-    love.graphics.draw(PIPE_IMAGE, math.floor(self.x + 0.5), math.floor(self.y))
+function Pipe:render(y, position)
+    love.graphics.draw(PIPE_IMAGE, math.floor(self.x + 0.5), y, 0, 1, position)
 end
