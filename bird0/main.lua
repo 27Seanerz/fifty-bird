@@ -5,8 +5,13 @@ April 18th
 
 -- _______________________________________________________________________ INITIALIZE __________________________________________________________________________
 
--- virtual resolution handling library
+-- library handling
 push = require 'push'
+Class = require 'class'
+
+-- my classes handling
+require 'Bird'
+require 'Pipe'
 
 -- physical screen dimensions
 WINDOW_WIDTH = 1422
@@ -28,12 +33,21 @@ local GROUND_SPEED = 60
 local BACKGROUND_LOOP = 413
 local GROUND_LOOP = 413
 
+--init objects
+local bird = Bird()
+
+local pipes = {}
+local pipesAlarm = 0
+
 
 -- _______________________________________________________________________ LOAD __________________________________________________________________________
 
 function love.load()
     -- initialize our nearest-neighbor filter (doens't anti analyze, doesn't make blurry, good for retro)
     love.graphics.setDefaultFilter('nearest', 'nearest')
+
+    -- initialize random 
+    math.randomseed(os.time())
 
     -- app window title
     love.window.setTitle('Sean\'s Flappy Bird')
@@ -44,6 +58,8 @@ function love.load()
         fullscreen = false,
         resizable = true
     })
+
+    love.keyboard.keysPressed = {}
 end
 
 
@@ -56,9 +72,19 @@ end
 
 --allows for asynchronous input capture
 function love.keypressed(key)
+    love.keyboard.keysPressed[key] = true
+
     if key == 'escape' then
         love.event.quit()
     end
+end
+
+function love.keyboard.wasPressed(key)
+    if love.keyboard.keysPressed[key] then 
+        return true 
+    else 
+        return false 
+    end 
 end
 
 
@@ -68,6 +94,35 @@ function love.update(dt)
     -- scrolls ground and background
     backgroundScroll = (backgroundScroll + BACKGROUND_SPEED*dt) % BACKGROUND_LOOP
     groundScroll = (groundScroll + GROUND_SPEED*dt) % VIRTUAL_WIDTH
+
+  
+
+    pipesAlarm = pipesAlarm + dt
+    if pipesAlarm > 2 then 
+        table.insert(pipes, Pipe())
+        pipesAlarm = 0
+    end 
+
+      -- class update functions
+    bird:update(dt)
+
+    --pipe:update for all pipe objects
+    for k, pipe in pairs(pipes) do
+        pipe:update(dt)
+
+        if pipe.x + pipe.width < 0 then 
+            table.remove(pipes, k)
+        end 
+
+    end 
+
+  
+
+
+    --clears the keys stored/checked last frame
+    love.keyboard.keysPressed = {}
+
+  
 
 end
 
@@ -80,12 +135,22 @@ function love.draw()
 
     -- draw ground and background 
     love.graphics.draw(background, -backgroundScroll, 0)
+
+    -- draw pipes 
+    for k, pipe in pairs(pipes) do
+        pipe:render()
+    end 
+
+
     love.graphics.draw(ground, -groundScroll, VIRTUAL_HEIGHT - 16)
 
 
+    bird:render() 
+
     -- DEBUG
     -- love.graphics.printf(tostring(backgroundScroll), VIRTUAL_WIDTH-30, 10, 100, "center") --check scroll
-    
+    -- love.graphic.printf(tostring(love.keyboard.keysPressed{0}), VIRTUAL_WIDTH-30, 10, 100, "center")
+
     push:finish() -- required in order to render using push lib
     
 end

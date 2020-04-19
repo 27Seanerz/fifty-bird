@@ -13,10 +13,9 @@ Pipe = Class{}
 
 -- since we only want the image loaded once, not per instantation, define it externally
 local PIPE_IMAGE = love.graphics.newImage('pipe.png')
-
 local PIPE_SCROLL = -60
 
-function Pipe:init()
+function Pipe:init(position)
     self.x = VIRTUAL_WIDTH
 
     -- set the Y to a random value halfway below the screen
